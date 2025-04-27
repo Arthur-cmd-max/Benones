@@ -1,0 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Processo
+{
+    public int PID { get; set; }
+    public string nome { get; set; }
+    public int tempoExecucao { get; set; }
+    public int tempoEspera { get; set; }
+    public int tempoChegada { get; set; }
+    public int tempoInicio { get; set; }
+    public int tempoTermino { get; set; }
+}
+
+class Programa
+{
+    static void Main(string[] args)
+    {
+        List<Processo> processos = new List<Processo>
+        {
+            new Processo { PID = 101, nome = "Spotify", tempoChegada = 0, tempoExecucao = 10 },
+            new Processo { PID = 102, nome = "Navegador", tempoChegada = 4, tempoExecucao = 15 },
+            new Processo { PID = 103, nome = "Word", tempoChegada = 8, tempoExecucao = 20 }
+        };
+
+        processos = processos.OrderBy(p => p.tempoChegada).ToList();
+        int tempoAtual = 0;
+
+        Console.WriteLine("Escalonamento \n");
+        foreach (var processo in processos){
+            if(tempoAtual < processo.tempoChegada){
+                tempoAtual = processo.tempoChegada;
+            }
+            processo.tempoInicio = tempoAtual;
+            processo.tempoEspera = tempoAtual - processo.tempoChegada;
+            processo.tempoTermino = processo.tempoInicio + processo.tempoExecucao;
+
+            Console.WriteLine($"Processo {processo.PID} ({processo.nome}) - Tempo de espera: {processo.tempoEspera}, Tempo de término: {processo.tempoTermino}");
+            tempoAtual += processo.tempoExecucao;
+        }
+        double mediaEspera = processos.Average(p => p.tempoEspera);
+        Console.WriteLine($"\nTempo médio de espera: {mediaEspera:F2}");
+    }
+}
